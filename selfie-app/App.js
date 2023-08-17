@@ -1,20 +1,33 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { ClerkProvider, SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
+import { StatusBar } from "expo-status-bar";
+import { Button, StyleSheet, Text, View } from "react-native";
+import LoginFlow from "./loginflow/LoginFlow";
+import HomeScreen from "./screens/HomeScreen";
+import Root from "./loginflow/Root";
 
 export default function App() {
+  CLERK_PUBLISHABLE_KEY =
+    "pk_test_YWNjZXB0ZWQtc2NvcnBpb24tOTIuY2xlcmsuYWNjb3VudHMuZGV2JA";
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+      <LoginFlow>
+        <SignedIn>
+          <HomeScreen />
+          {/* <SignOut /> */}
+        </SignedIn>
+        <SignedOut>
+          <Root />
+        </SignedOut>
+      </LoginFlow>
+    </ClerkProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#fff",
+//     alignItems: "center",
+//     justifyContent: "center",
+//   },
+// });
