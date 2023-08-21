@@ -1,16 +1,23 @@
 import * as React from "react";
-import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Button, PaperProvider, TextInput } from "react-native-paper";
+import SignInScreen from "./SignInScreen";
 import { useState } from "react";
+import { AuthContext } from "../loginflow/LoginFlow";
 
-export default function SignUpScreen({ pressed }) {
+export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState("");
+
+  const { setIsSignedUp } = React.useContext(AuthContext);
+  const SignUpUser = () => {
+    setIsSignedUp(false);
+  };
 
   // start the sign up process.
   const onSignUpPress = async () => {
@@ -52,106 +59,99 @@ export default function SignUpScreen({ pressed }) {
   };
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-    >
-      {!pendingVerification && (
-        <View
-          style={{
-            justifyContent: "space-around",
-            alignItems: "center",
-            height: 300,
-          }}
-        >
-          <Text style={{ fontSize: 30 }}>Sign Up</Text>
-
-          <TextInput
-            mode="outlined"
-            value={emailAddress}
-            label="Email"
-            onChangeText={(email) => setEmailAddress(email)}
+    <PaperProvider>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        {!pendingVerification && (
+          <View
             style={{
-              width: 250,
-              height: 40,
-              backgroundColor: "white",
-              fontSize: 13,
+              justifyContent: "space-around",
+              alignItems: "center",
+              height: 300,
             }}
-          />
-
-          <TextInput
-            mode="outlined"
-            value={password}
-            label="Password"
-            secureTextEntry={secureTextEntry}
-            onChangeText={(password) => setPassword(password)}
-            style={{
-              width: 250,
-              height: 40,
-              backgroundColor: "white",
-              fontSize: 13,
-            }}
-            right={
-              <TextInput.Icon
-                style={{ marginTop: 15 }}
-                icon="eye"
-                onPress={() => {
-                  setSecureTextEntry(!secureTextEntry);
+          >
+            <Text style={{ fontSize: 30 }}>Бүртгүүлэх</Text>
+            <View>
+              <TextInput
+                // autoCapitalize="none"
+                value={emailAddress}
+                placeholder="Email..."
+                onChangeText={(email) => setEmailAddress(email)}
+                style={{
+                  width: 250,
+                  height: 40,
+                  backgroundColor: "white",
+                  borderWidth: 1,
+                  borderRadius: 5,
                 }}
               />
-            }
-          />
+            </View>
 
-          <Button
-            onPress={onSignUpPress}
-            mode="contained"
-            style={{
-              width: 250,
-              height: 40,
-            }}
-          >
-            Sign Up
-          </Button>
+            <View style={{ flexDirection: "row" }}>
+              <TextInput
+                value={password}
+                placeholder="Password..."
+                secureTextEntry={secureTextEntry}
+                onChangeText={(password) => setPassword(password)}
+                style={{
+                  width: 250,
+                  height: 40,
+                  backgroundColor: "white",
+                  borderWidth: 1,
+                  borderRadius: 5,
+                }}
+                right={
+                  <TextInput.Icon
+                    icon="eye"
+                    onPress={() => {
+                      setSecureTextEntry(!secureTextEntry);
+                    }}
+                  />
+                }
+              />
+            </View>
 
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text style={{ fontSize: 12 }}>Have an account? </Text>
-            <TouchableOpacity onPress={() => pressed()}>
-              <Text style={{ fontSize: 12, textDecorationLine: "underline" }}>
-                Log In
+            <TouchableOpacity onPress={onSignUpPress}>
+              <View
+                style={{
+                  backgroundColor: "green",
+                  width: 250,
+                  height: 40,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 5,
+                }}
+              >
+                <Text style={{ color: "white" }}>Бүртгүүлэх</Text>
+              </View>
+            </TouchableOpacity>
+
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={{ fontSize: 12 }}>
+                Хэрэглэгч байгаа бол энд дарна уу.
               </Text>
+              <TouchableOpacity onPress={SignUpUser}>
+                <Text style={{ fontSize: 12, textDecorationLine: "underline" }}>
+                  Нэвтрэх
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+        {pendingVerification && (
+          <View>
+            <View>
+              <TextInput
+                value={code}
+                placeholder="Code..."
+                onChangeText={(code) => setCode(code)}
+              />
+            </View>
+            <TouchableOpacity onPress={onPressVerify}>
+              <Text>Verify Email</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      )}
-      {pendingVerification && (
-        <View
-          style={{
-            rowGap: 10,
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <View>
-            <TextInput
-              value={code}
-              mode="outlined"
-              style={{ width: 300 }}
-              label="Code"
-              onChangeText={(code) => setCode(code)}
-            />
-          </View>
-          <Button mode="contained" onPress={onPressVerify}>
-            Verify Email
-          </Button>
-          <Button
-            mode="contained"
-            onPress={() => setPendingVerification(false)}
-            style={{ position: "absolute", top: 0, left: -20 }}
-          >
-            Back
-          </Button>
-        </View>
-      )}
-    </SafeAreaView>
+        )}
+      </View>
+    </PaperProvider>
   );
 }
