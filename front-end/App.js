@@ -2,24 +2,10 @@ import { ClerkProvider, SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
 import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, View } from "react-native";
 import LoginFlow from "./loginflow/LoginFlow";
-import HomeScreen from "./screens/HomeScreen";
 import Root from "./loginflow/Root";
 import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-
-const Tab = createBottomTabNavigator();
-
-function MyTabs() {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeScreen} />
-      {/* CAMERA SCREEN HERE */}
-      <Tab.Screen name="Take a Pic" component={HomeScreen} />
-      {/* PROFILE SCREEN HERE  */}
-      <Tab.Screen name="My Porfile" component={HomeScreen} />
-    </Tab.Navigator>
-  );
-}
+import { PaperProvider } from "react-native-paper";
+import MyTabs from "./components/MyTabs";
 
 export default function App() {
   CLERK_PUBLISHABLE_KEY =
@@ -27,16 +13,18 @@ export default function App() {
   return (
     <>
       <NavigationContainer>
-        <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
-          <LoginFlow>
-            <SignedIn>
-              <MyTabs />
-            </SignedIn>
-            <SignedOut>
-              <Root />
-            </SignedOut>
-          </LoginFlow>
-        </ClerkProvider>
+        <PaperProvider>
+          <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+            <LoginFlow>
+              <SignedIn>
+                <MyTabs />
+              </SignedIn>
+              <SignedOut>
+                <Root />
+              </SignedOut>
+            </LoginFlow>
+          </ClerkProvider>
+        </PaperProvider>
       </NavigationContainer>
     </>
   );
