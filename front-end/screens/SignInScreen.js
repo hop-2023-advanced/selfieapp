@@ -1,19 +1,14 @@
 import React, { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
-import { useSignIn } from "@clerk/clerk-expo";
-import { PaperProvider, TextInput } from "react-native-paper";
-import { AuthContext } from "../loginflow/LoginFlow";
+import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { useSignIn, useUser } from "@clerk/clerk-expo";
+import { Button, TextInput } from "react-native-paper";
 
-export default function SignInScreen() {
+export default function SignInScreen({ pressed }) {
   const { signIn, setActive, isLoaded } = useSignIn();
   const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [username, setUserName] = React.useState("");
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
-
-  const { setIsSignedUp } = React.useContext(AuthContext);
-  const SignInUser = () => {
-    setIsSignedUp(true);
-  };
 
   const onSignInPress = async () => {
     if (!isLoaded) {
@@ -33,83 +28,74 @@ export default function SignInScreen() {
     }
   };
   return (
-    <PaperProvider>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <View
+    <SafeAreaView
+      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+    >
+      <View
+        style={{
+          justifyContent: "space-around",
+          alignItems: "center",
+          height: 300,
+        }}
+      >
+        <Text style={{ fontSize: 30 }}>Log In</Text>
+
+        <TextInput
+          mode="outlined"
+          value={emailAddress}
+          label="Email or username"
+          onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
           style={{
-            justifyContent: "space-around",
-            alignItems: "center",
-            height: 300,
+            width: 250,
+            height: 40,
+            backgroundColor: "white",
+            fontSize: 13,
+          }}
+        />
+
+        <TextInput
+          mode="outlined"
+          value={password}
+          label="Password"
+          secureTextEntry={secureTextEntry}
+          onChangeText={(password) => setPassword(password)}
+          style={{
+            width: 250,
+            height: 40,
+            backgroundColor: "white",
+            fontSize: 13,
+          }}
+          right={
+            <TextInput.Icon
+              style={{ marginTop: 15 }}
+              icon="eye"
+              onPress={() => {
+                setSecureTextEntry(!secureTextEntry);
+              }}
+            />
+          }
+        />
+
+        <Button
+          onPress={onSignInPress}
+          mode="contained"
+          style={{
+            width: 250,
+            height: 40,
           }}
         >
-          <Text style={{ fontSize: 30 }}>Нэвтрэх</Text>
-          <View>
-            <TextInput
-              // autoCapitalize="none"
-              value={emailAddress}
-              placeholder="Email..."
-              onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
-              style={{
-                width: 250,
-                height: 40,
-                backgroundColor: "white",
-                borderWidth: 1,
-                borderRadius: 5,
-              }}
-            />
-          </View>
+          Log In
+        </Button>
 
-          <View>
-            <TextInput
-              value={password}
-              placeholder="Password..."
-              secureTextEntry={secureTextEntry}
-              onChangeText={(password) => setPassword(password)}
-              style={{
-                width: 250,
-                height: 40,
-                backgroundColor: "white",
-                borderWidth: 1,
-                borderRadius: 5,
-              }}
-              right={
-                <TextInput.Icon
-                  icon="eye"
-                  onPress={() => {
-                    setSecureTextEntry(!secureTextEntry);
-                  }}
-                />
-              }
-            />
-          </View>
-
-          <TouchableOpacity onPress={onSignInPress}>
-            <View
-              style={{
-                backgroundColor: "green",
-                width: 250,
-                height: 40,
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 5,
-              }}
-            >
-              <Text style={{ color: "white" }}>Нэвтрэх</Text>
-            </View>
-          </TouchableOpacity>
-
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text style={{ fontSize: 12 }}>
-              Хэрэглэгч байхгүй бол энд дарна уу.
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text style={{ fontSize: 12 }}>Don't have an account? </Text>
+          <TouchableOpacity onPress={() => pressed()}>
+            <Text style={{ fontSize: 12, textDecorationLine: "underline" }}>
+              Sign Up
             </Text>
-            <TouchableOpacity onPress={SignInUser}>
-              <Text style={{ fontSize: 12, textDecorationLine: "underline" }}>
-                Бүртгүүлэх
-              </Text>
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
-    </PaperProvider>
+    </SafeAreaView>
   );
 }
