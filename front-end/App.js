@@ -2,8 +2,9 @@ import { ClerkProvider, SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
 import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, View } from "react-native";
 import LoginFlow from "./loginflow/LoginFlow";
-import HomeScreen from "./screens/HomeScreen";
+import HomeScreen from "./pages/HomeScreen";
 import Root from "./loginflow/Root";
+import CameraScreen from "./pages/CameraScreen";
 
 export default function App() {
   CLERK_PUBLISHABLE_KEY =
@@ -14,6 +15,7 @@ export default function App() {
         <SignedIn>
           <HomeScreen />
           {/* <SignOut /> */}
+          <CameraScreen />
         </SignedIn>
         <SignedOut>
           <Root />
