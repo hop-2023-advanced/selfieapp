@@ -1,11 +1,17 @@
 import HomeScreen from "../screens/HomeScreen";
-import { Animated, View, Text, TouchableOpacity } from "react-native";
+import {
+  Animated,
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
 import { useRef, useEffect } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as Animatable from "react-native-animatable";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 
 const TabArr = [
   // HOME SCREEN
@@ -40,7 +46,6 @@ const TabArr = [
 const TabButton = (props) => {
   const { item, onPress, accessibilityState } = props;
   const focused = accessibilityState.selected;
-  const viewRef = useRef(null);
   useEffect(() => {
     if (focused) {
       viewRef.current.animate({
@@ -79,7 +84,15 @@ const TabButton = (props) => {
 
 export default function MyTabs() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          height: 60,
+        },
+      }}
+      tabBarPosition="bottom"
+    >
       {TabArr.map((item, i) => {
         return (
           <Tab.Screen
@@ -87,16 +100,19 @@ export default function MyTabs() {
             name={item.route}
             component={item.component}
             options={{
-              tabBarLabel: item.label,
-              tabBarIcon: ({ color, focused }) => (
-                <MaterialCommunityIcons
-                  name={focused ? item.activeicon : item.inActiveicon}
-                  color={color}
-                  size={24}
-                />
-              ),
-              tabBarButton: (props) => <TabButton {...props} item={item} />,
-              tabBarStyle: {},
+              title: (props) => {
+                return (
+                  <MaterialCommunityIcons
+                    name={props.focused ? item.activeicon : item.inActiveicon}
+                    color={props.focused ? "blue" : "black"}
+                    size={30}
+                  />
+                );
+              },
+              tabBarIndicatorStyle: {
+                display: "none",
+              },
+              // tabBarButton: (props) => <TabButton {...props} item={item} />,
             }}
           />
         );
