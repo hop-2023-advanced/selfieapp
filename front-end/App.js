@@ -13,7 +13,7 @@ export default function App() {
     <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
       <LoginFlow>
         <SignedIn>
-          <HomeScreen />
+          {/* <HomeScreen /> */}
           {/* <SignOut /> */}
           <CameraScreen />
         </SignedIn>
