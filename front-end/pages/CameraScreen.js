@@ -1,7 +1,8 @@
-import { Camera, CameraType } from "expo-camera";
+import { Camera, CameraType, FlashMode } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import {
   Button,
   Pressable,
@@ -15,6 +16,7 @@ import {
 
 export default function CameraScreen() {
   const [type, setType] = useState(CameraType.back);
+  const [flash, setflash] = useState(false);
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [lastPhoto, setLastPhoto] = useState("");
   const [permissionResponse, request] = MediaLibrary.usePermissions();
@@ -77,6 +79,10 @@ export default function CameraScreen() {
     );
   }
 
+  function toggleFlash() {
+    setflash(!flash);
+  }
+
   async function getPhotos() {
     let media = await MediaLibrary.getAssetsAsync({
       mediaType: MediaLibrary.MediaType.photo,
@@ -86,30 +92,44 @@ export default function CameraScreen() {
   }
 
   async function takePicture() {
-    if (pressed === false) {
-      setPressed(true);
-      setTimeout(async () => {
-        const { uri } = await cameraRef.current.takePictureAsync();
-        await MediaLibrary.saveToLibraryAsync(uri);
-        setPressed(false);
-      }, 5000);
-      setInterval(() => {
-        setDelay((prev) => {
-          if (prev > 0) {
-            return prev - 1;
-          } else {
-            return 5;
-          }
-        });
-      }, 1000);
-    }
+    setTimeout(async () => {
+      setPressed(false);
+      const { uri } = await cameraRef.current.takePictureAsync();
+      await MediaLibrary.saveToLibraryAsync(uri);
+      clearInterval(start);
+      setDelay(5);
+    }, 5000);
+
+    let start = setInterval(() => {
+      setDelay((prev) => {
+        if (prev > 0) {
+          return prev - 1;
+        } else {
+          return 5;
+        }
+      });
+    }, 1000);
   }
-  console.log(pressed);
 
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.container}>
-        <Camera style={styles.camera} type={type} ref={cameraRef}></Camera>
+        <View style={styles.flashContainer}>
+          <Pressable style={styles.flashSection}>
+            <Ionicons
+              name={flash ? "flash" : "flash-outline"}
+              size={20}
+              color="grey"
+              onPress={toggleFlash}
+            />
+          </Pressable>
+        </View>
+        <Camera
+          style={styles.camera}
+          type={type}
+          ref={cameraRef}
+          flashMode={flash ? "on" : "off"}
+        ></Camera>
       </View>
       <View style={styles.libraryContainer}>
         <Pressable style={styles.librarySection}>
@@ -119,6 +139,7 @@ export default function CameraScreen() {
           style={styles.button}
           onPress={() => {
             takePicture();
+            setPressed(true);
           }}
         >
           <View style={styles.buttonBorder}>
@@ -126,11 +147,11 @@ export default function CameraScreen() {
           </View>
         </Pressable>
         <Pressable style={styles.librarySection} onPress={toggleCameraType}>
-          <MaterialIcons name="switch-camera" size={40} color="grey" />
+          <MaterialIcons name="switch-camera" size={35} color="grey" />
         </Pressable>
       </View>
-      <View>
-        <Text>{delay}</Text>
+      <View style={styles.countDown}>
+        <Text style={styles.countDownText}>{pressed ? delay : ""}</Text>
       </View>
     </SafeAreaView>
   );
@@ -139,9 +160,7 @@ export default function CameraScreen() {
 const styles = StyleSheet.create({
   screen: { height: "100%", width: "100%" },
   container: {
-    width: 200,
-    height: 200,
-    justifyContent: "center",
+    flex: 1,
   },
   libraryContainer: {
     width: "100%",
@@ -152,14 +171,24 @@ const styles = StyleSheet.create({
     bottom: 100,
     flexDirection: "row",
   },
+  flashSection: {
+    width: 30,
+    height: 30,
+    borderRadius: 50,
+    borderColor: "grey",
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   librarySection: {
     width: "33%",
     justifyContent: "center",
     alignItems: "center",
   },
+  flashContainer: { width: "100%", height: 50 },
   buttonBorder: {
-    width: 80,
-    height: 80,
+    width: 70,
+    height: 70,
     borderWidth: 5,
     borderColor: "grey",
     borderRadius: 50,
@@ -169,12 +198,22 @@ const styles = StyleSheet.create({
   },
   image: { width: 50, height: 50, borderRadius: 10 },
   buttonBody: {
-    width: 65,
-    height: 65,
+    width: 55,
+    height: 55,
     backgroundColor: "grey",
     borderRadius: 50,
   },
   camera: {
-    flex: 1,
+    height: "70%",
+  },
+  countDown: {
+    position: "absolute",
+    alignSelf: "center",
+    top: "20%",
+  },
+  countDownText: {
+    fontSize: 200,
+    color: "white",
+    fontWeight: "700",
   },
 });
