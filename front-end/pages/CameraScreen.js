@@ -1,8 +1,9 @@
 import { Camera, CameraType, FlashMode } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
-import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { configureAbly, useChannel } from "@ably-labs/react-hooks";
 import {
   Button,
   Pressable,
@@ -14,6 +15,11 @@ import {
   Image,
 } from "react-native";
 
+configureAbly({
+  key: "Lx-5NA.VcfrwA:E8rcMjUru_pIyAg6nFpGYv5MbvSDx-eP_N8DPGXs6Zo",
+  clientId: Date.now() + "",
+});
+
 export default function CameraScreen() {
   const [type, setType] = useState(CameraType.back);
   const [flash, setflash] = useState(false);
@@ -22,11 +28,20 @@ export default function CameraScreen() {
   const [permissionResponse, request] = MediaLibrary.usePermissions();
   const [delay, setDelay] = useState(5);
   const [pressed, setPressed] = useState(false);
+  const [isStarted, setIsStarted] = useState(false);
   const cameraRef = useRef();
+
+  const [startChannel] = useChannel("start", (startNotification) => {
+    setIsStarted(startNotification.data.started);
+  });
 
   useEffect(() => {
     getPhotos();
   }, [lastPhoto]);
+
+  useEffect(() => {
+    if (isStarted) takePicture();
+  }, [isStarted]);
 
   if (!permission) {
     return <View />;
@@ -42,6 +57,12 @@ export default function CameraScreen() {
       </View>
     );
   }
+  async function sendMessage() {
+    selfieChannel.publish("private-selfie", { lastPhoto, date: Date.now() });
+  }
+  async function sendStart() {
+    startChannel.publish("start", { started: true });
+  }
 
   if (!permissionResponse) {
     return <View />;
@@ -52,9 +73,9 @@ export default function CameraScreen() {
   if (!granted && canAskAgain) {
     return (
       <SafeAreaView>
-        <View>
+        <View style={{ margin: 100 }}>
           <TouchableOpacity onPress={request}>
-            <Text>sent request</Text>
+            <Text>sent request a</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -65,8 +86,8 @@ export default function CameraScreen() {
     return (
       <SafeAreaView>
         <View>
-          <TouchableOpacity>
-            <Text>sent request</Text>
+          <TouchableOpacity onPress={request}>
+            <Text> sent request</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -98,6 +119,8 @@ export default function CameraScreen() {
       await MediaLibrary.saveToLibraryAsync(uri);
       clearInterval(start);
       setDelay(5);
+      sendMessage();
+      startChannel.publish("start", { started: false });
     }, 5000);
 
     let start = setInterval(() => {
@@ -118,7 +141,7 @@ export default function CameraScreen() {
           <Pressable style={styles.flashSection}>
             <Ionicons
               name={flash ? "flash" : "flash-outline"}
-              size={20}
+              size={15}
               color="grey"
               onPress={toggleFlash}
             />
@@ -136,10 +159,11 @@ export default function CameraScreen() {
           <Image style={styles.image} source={{ uri: lastPhoto.uri }} />
         </Pressable>
         <Pressable
+          disabled={pressed}
           style={styles.button}
           onPress={() => {
-            takePicture();
             setPressed(true);
+            sendStart();
           }}
         >
           <View style={styles.buttonBorder}>
@@ -147,11 +171,15 @@ export default function CameraScreen() {
           </View>
         </Pressable>
         <Pressable style={styles.librarySection} onPress={toggleCameraType}>
-          <MaterialIcons name="switch-camera" size={35} color="grey" />
+          <MaterialCommunityIcons
+            name="rotate-3d-variant"
+            size={35}
+            color="grey"
+          />
         </Pressable>
       </View>
       <View style={styles.countDown}>
-        <Text style={styles.countDownText}>{pressed ? delay : ""}</Text>
+        <Text style={styles.countDownText}>{isStarted ? delay : ""}</Text>
       </View>
     </SafeAreaView>
   );
@@ -161,6 +189,8 @@ const styles = StyleSheet.create({
   screen: { height: "100%", width: "100%" },
   container: {
     flex: 1,
+    display: "flex",
+    alignItems: "center",
   },
   libraryContainer: {
     width: "100%",
@@ -172,11 +202,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   flashSection: {
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
     borderRadius: 50,
     borderColor: "grey",
-    borderWidth: 2,
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -185,7 +215,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  flashContainer: { width: "100%", height: 50 },
+  flashContainer: { width: "90%", height: 30 },
   buttonBorder: {
     width: 70,
     height: 70,
@@ -205,6 +235,7 @@ const styles = StyleSheet.create({
   },
   camera: {
     height: "70%",
+    width: "90%",
   },
   countDown: {
     position: "absolute",
