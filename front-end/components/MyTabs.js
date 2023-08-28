@@ -4,8 +4,15 @@ import { useRef, useEffect } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as Animatable from "react-native-animatable";
+import UserScreen from "../screens/UserScreen";
+import { createStackNavigator } from "@react-navigation/stack";
+import EditProfile from "../screens/EditProfileScreen";
+import EditProfileScreen from "../screens/EditProfileScreen";
+import EditProfileImageScreen from "../screens/EditProfileImageScreen";
+import ImageItem from "./ImageItem";
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 const TabArr = [
   // HOME SCREEN
@@ -28,12 +35,12 @@ const TabArr = [
   },
   //PROFILE SCREEN
   {
-    route: "Profile",
-    label: "Profile",
+    route: "Profile1",
+    label: "Profile1",
     // type: Icon.MaterialCommunityIcons,
     activeicon: "account",
     inActiveicon: "account-outline",
-    component: HomeScreen,
+    component: MyStack,
   },
 ];
 
@@ -76,6 +83,33 @@ const TabButton = (props) => {
     </TouchableOpacity>
   );
 };
+
+function MyStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Profile"
+        component={UserScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Edit Profile"
+        component={EditProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Edit Profile Image"
+        component={EditProfileImageScreen}
+        options={{ headerShown: false }}
+      />
+      {/* <Stack.Screen
+        name="Image Item"
+        component={ImageItem}
+        options={{ headerShown: false }}
+      /> */}
+    </Stack.Navigator>
+  );
+}
 
 export default function MyTabs() {
   return (
