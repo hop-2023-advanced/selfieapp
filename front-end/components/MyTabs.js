@@ -18,6 +18,7 @@ import EditProfile from "../screens/EditProfileScreen";
 import EditProfileScreen from "../screens/EditProfileScreen";
 import EditProfileImageScreen from "../screens/EditProfileImageScreen";
 import ImageItem from "./ImageItem";
+
 const Stack = createStackNavigator();
 
 const TabArr = [
