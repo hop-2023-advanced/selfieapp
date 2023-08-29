@@ -38,6 +38,8 @@ export default function AvatarIcon(props) {
             height: 80,
             resizeMode: "contain",
             borderRadius: "50%",
+            borderWidth: 2,
+            borderColor: "white",
           }}
         />
       </View>
