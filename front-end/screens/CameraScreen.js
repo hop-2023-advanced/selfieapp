@@ -57,9 +57,9 @@ export default function CameraScreen() {
       </View>
     );
   }
-  async function sendMessage() {
-    selfieChannel.publish("private-selfie", { lastPhoto, date: Date.now() });
-  }
+  // async function sendMessage() {
+  //   selfieChannel.publish("private-selfie", { lastPhoto, date: Date.now() });
+  // }
   async function sendStart() {
     startChannel.publish("start", { started: true });
   }
@@ -113,27 +113,24 @@ export default function CameraScreen() {
   }
 
   async function takePicture() {
+    setDelay(5);
     setTimeout(async () => {
       setPressed(false);
+      startChannel.publish("start", { started: false });
       const { uri } = await cameraRef.current.takePictureAsync();
       await MediaLibrary.saveToLibraryAsync(uri);
       clearInterval(start);
-      setDelay(5);
       sendMessage();
-      startChannel.publish("start", { started: false });
     }, 5000);
 
     let start = setInterval(() => {
       setDelay((prev) => {
         if (prev > 0) {
           return prev - 1;
-        } else {
-          return 5;
         }
       });
     }, 1000);
   }
-
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.container}>
