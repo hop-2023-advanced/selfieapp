@@ -1,5 +1,5 @@
 import HomeScreen from "../screens/HomeScreen";
-import CameraScreen from "../pages/CameraScreen";
+import CameraScreen from "../screens/CameraScreen";
 import {
   Animated,
   View,

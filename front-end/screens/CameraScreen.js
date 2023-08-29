@@ -57,9 +57,6 @@ export default function CameraScreen() {
       </View>
     );
   }
-  // async function sendMessage() {
-  //   selfieChannel.publish("private-selfie", { lastPhoto, date: Date.now() });
-  // }
   async function sendStart() {
     startChannel.publish("start", { started: true });
   }
@@ -120,7 +117,6 @@ export default function CameraScreen() {
       const { uri } = await cameraRef.current.takePictureAsync();
       await MediaLibrary.saveToLibraryAsync(uri);
       clearInterval(start);
-      sendMessage();
     }, 5000);
 
     let start = setInterval(() => {
