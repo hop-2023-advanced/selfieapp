@@ -1,4 +1,5 @@
 import HomeScreen from "../screens/HomeScreen";
+import CameraScreen from "../pages/CameraScreen";
 import {
   Animated,
   View,
@@ -38,7 +39,7 @@ const TabArr = [
     // type: Icon.MaterialCommunityIcons,
     activeicon: "camera",
     inActiveicon: "camera-outline",
-    component: HomeScreen,
+    component: CameraScreen,
   },
   //PROFILE SCREEN
   {

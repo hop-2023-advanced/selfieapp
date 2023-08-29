@@ -57,9 +57,9 @@ export default function CameraScreen() {
       </View>
     );
   }
-  async function sendMessage() {
-    selfieChannel.publish("private-selfie", { lastPhoto, date: Date.now() });
-  }
+  // async function sendMessage() {
+  //   selfieChannel.publish("private-selfie", { lastPhoto, date: Date.now() });
+  // }
   async function sendStart() {
     startChannel.publish("start", { started: true });
   }
