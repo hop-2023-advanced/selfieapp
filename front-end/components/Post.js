@@ -1,6 +1,7 @@
 import { Dimensions, Image, Text, View } from "react-native";
 
-export default function Post() {
+export default function Post({data}) {
+  console.log(data);
   const windowWidth = Dimensions.get("screen").width;
   return (
     <View
@@ -32,9 +33,13 @@ export default function Post() {
           }}
         />
         {/* <View style={{ flexDirection: "row", backgroundColor: "red" }}> */}
-        <Text>My Nickname</Text>
-        <Text>X</Text>
-        <Text>My Friends</Text>
+        <Text>{data.item.username}</Text>
+        <Text>with</Text>
+        {data.item.tag.map((tag) => {
+          return(
+            <Text>{tag}</Text>
+          )
+        })}
         {/* </View> */}
       </View>
       <Image

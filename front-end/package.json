@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ably-labs/react-hooks": "^2.1.1",
+    "@apollo/client": "^3.8.2",
     "@bradgarropy/use-countdown": "^2.0.0",
     "@clerk/clerk-expo": "^0.18.17",
     "@react-native-community/cli-server-api": "^11.3.7",

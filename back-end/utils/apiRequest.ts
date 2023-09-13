@@ -11,7 +11,7 @@ export async function apiRequest(action:any, collectionName:any, options:any) {
         },
         body: JSON.stringify({
           dataSource: "selfieapp",
-          database: "db", 
+          database: "db",
           collection: collectionName,
           ...options,
         }),
